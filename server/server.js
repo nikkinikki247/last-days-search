@@ -7,7 +7,10 @@ import Database from "better-sqlite3";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: "https://nikkinikki247-last-days-search.vercel.app"
+}));
 app.use(express.json());
 
 
