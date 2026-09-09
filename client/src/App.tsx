@@ -12,7 +12,8 @@ function App() {
   const [results, setResults] = useState<Result[]>([]);
 
   async function search(word: string) {
-    const res = await fetch("http://localhost:3000/search", {
+    // const res = await fetch("http://localhost:3000/search", {
+    const res = await fetch("https://last-days-search.onrender.com", {
       method: "POST",
 
       headers: {
