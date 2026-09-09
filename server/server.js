@@ -8,20 +8,21 @@ dotenv.config();
 
 const app = express();
 // app.use(cors());
-const allowedOrigins = [
-  "https://nikkinikki247-last-days-search.vercel.app",
-  "http://localhost:5173"
-];
+app.use(cors({ origin: "*" }));
+// const allowedOrigins = [
+//   "https://nikkinikki247-last-days-search.vercel.app",
+//   "http://localhost:5173"
+// ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow server-to-server / curl
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error("Not allowed by CORS"));
-  }
-}));
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (!origin) return callback(null, true); // allow server-to-server / curl
+//     if (allowedOrigins.includes(origin)) {
+//       return callback(null, true);
+//     }
+//     return callback(new Error("Not allowed by CORS"));
+//   }
+// }));
 
 app.use(express.json());
 
