@@ -8,9 +8,21 @@ dotenv.config();
 
 const app = express();
 // app.use(cors());
+const allowedOrigins = [
+  "https://nikkinikki247-last-days-search.vercel.app",
+  "http://localhost:5173"
+];
+
 app.use(cors({
-  origin: "https://nikkinikki247-last-days-search.vercel.app"
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow server-to-server / curl
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("Not allowed by CORS"));
+  }
 }));
+
 app.use(express.json());
 
 
@@ -104,69 +116,6 @@ async function fetchTranscript(videoId) {
   }
 }
 
-// ------------------------------
-// SYNC ENDPOINT
-// ------------------------------
-
-// app.post("/sync", async (req, res) => {
-//   try {
-//     const uploadsId = await getUploadsId();
-//     const allVideoIds = await getAllVideoIds(uploadsId);
-
-//     const existingIds = new Set(
-//       db.prepare("SELECT videoId FROM videos").all().map(v => v.videoId)
-//     );
-
-//     const newVideos = allVideoIds.filter(
-//       id => !existingIds.has(id)
-//     );
-
-//     console.log("New videos:", newVideos.length);
-
-//     for (const videoId of newVideos) {
-
-//       const transcript = await fetchTranscript(videoId);
-
-//       if (transcript) {
-
-//         // insert video
-//         db.prepare(`
-//           INSERT OR IGNORE INTO videos (videoId)
-//           VALUES (?)
-//         `).run(videoId);
-
-//         // insert transcript lines
-//         const insert = db.prepare(`
-//           INSERT INTO transcripts (videoId, text, timestamp)
-//           VALUES (?, ?, ?)
-//         `);
-
-//         const insertMany = db.transaction((lines) => {
-//           for (const line of lines) {
-//             insert.run(
-//               videoId,
-//               line.text,
-//               line.offset
-//             );
-//           }
-//         });
-
-//         insertMany(transcript);
-//       }
-
-//       console.log("Processed:", videoId);
-//     }
-
-//     res.json({
-//       message: "Sync complete",
-//       newVideos: newVideos.length
-//     });
-
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Sync failed" });
-//   }
-// });
 
 app.post("/sync", async (req, res) => {
   try {
@@ -240,17 +189,40 @@ app.post("/sync", async (req, res) => {
 // SEARCH ENDPOINT (FAST)
 // ------------------------------
 
+// app.post("/search", (req, res) => {
+//   const { word } = req.body;
+
+//   const results = db.prepare(`
+//     SELECT videoId, text, timestamp
+//     FROM transcripts
+//     WHERE text LIKE ?
+//     LIMIT 100
+//   `).all(`%${word}%`);
+
+//   res.json(results);
+// });
+
 app.post("/search", (req, res) => {
-  const { word } = req.body;
+  try {
+    const word = req.body?.word;
 
-  const results = db.prepare(`
-    SELECT videoId, text, timestamp
-    FROM transcripts
-    WHERE text LIKE ?
-    LIMIT 100
-  `).all(`%${word}%`);
+    if (!word) {
+      return res.json([]);
+    }
 
-  res.json(results);
+    const results = db.prepare(`
+      SELECT videoId, text, timestamp
+      FROM transcripts
+      WHERE text LIKE ?
+      LIMIT 100
+    `).all(`%${word}%`);
+
+    res.json(results);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ------------------------------
