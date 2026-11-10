@@ -186,22 +186,6 @@ app.post("/sync", async (req, res) => {
     res.status(500).json({ error: "Sync failed" });
   }
 });
-// ------------------------------
-// SEARCH ENDPOINT (FAST)
-// ------------------------------
-
-// app.post("/search", (req, res) => {
-//   const { word } = req.body;
-
-//   const results = db.prepare(`
-//     SELECT videoId, text, timestamp
-//     FROM transcripts
-//     WHERE text LIKE ?
-//     LIMIT 100
-//   `).all(`%${word}%`);
-
-//   res.json(results);
-// });
 
 app.post("/search", (req, res) => {
   try {
