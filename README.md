@@ -1,6 +1,3 @@
-Notes
+## Summary
 
-Basically, I have deployed the website so that I can see if YouTubeTranscripts will work with a different IP (because I am getting an error that is telling me the transcript is disabled for every video.)
-
-React part is deployed on Vercel and Node is deployed on Render.
-The websites refer to the git repo, and any changes pushed to the repo will show up in render and Vercel.
+This repository contains a web application that utilizes YouTubeTranscripts to fetch transcripts for YouTube videos. The frontend is built with React and deployed on Vercel, while the backend is a Node.js server deployed on Render. The application is designed to test the functionality of fetching transcripts from YouTube, particularly when encountering issues related to IP restrictions. The server is configured to accept requests from any origin using CORS, and users can test the API endpoint with a provided curl command.
